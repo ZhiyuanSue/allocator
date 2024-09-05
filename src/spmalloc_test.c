@@ -1,21 +1,20 @@
 #include <inc.h>
 #include <types.h>
 #include <spmalloc.h>
-#define NR_SIZE       12
+#define NR_CHUNK      12
 #define NR_ITERATIONS 10000
 #define NR_VICTIM     100
 #define NR_PTRS       10000
 void* ptrs[NR_PTRS];
 int ptrs_id[NR_PTRS];
 static u64 next = 10086;
-//I have to tell you that this rand function might not good enough for a larger range test
+// I have to tell you that this rand function might not good enough for a larger
+// range test
 static u64 sprand()
 {
         next = ((((u64)next * 1103515245 + 12345) / 65536) % 32768);
         return next;
 }
-static size_t sizes[NR_SIZE] =
-        {8, 16, 24, 32, 48, 64, 96, 128, 256, 512, 1024, 2048};
 static bool check_usable_victim(int victim, int curr_max)
 {
         for (int i = 0; i < curr_max; i++)
@@ -30,10 +29,14 @@ void spmalloc_test(void)
         double total_time = 0.0;
         spmalloc_init();
         for (int i = 0; i < NR_ITERATIONS; i++) {
+                if (!(i % 100))
+                        printf("iteration %d\n", i);
                 /*first alloc all with a rand size*/
                 start = clock();
                 for (int j = 0; j < NR_PTRS; j++) {
-                        ptrs[j] = spmalloc(sizes[sprand() % NR_SIZE]);
+                        ptrs[j] = spmalloc(obj_size[sprand() % NR_CHUNK]);
+                        if (!ptrs[j])
+                                goto error;
                 }
 
                 /*choose some victim pointer
@@ -56,7 +59,9 @@ void spmalloc_test(void)
                         /*realloc them all*/
                         for (int k = 0; k < victim_number; k++) {
                                 ptrs[ptrs_id[k]] =
-                                        spmalloc(sizes[sprand() % NR_SIZE]);
+                                        spmalloc(obj_size[sprand() % NR_CHUNK]);
+                                if (!ptrs[ptrs_id[k]])
+                                        goto error;
                         }
                 }
                 /*free all the ptrs*/
@@ -69,4 +74,8 @@ void spmalloc_test(void)
         printf("[ TEST ] total time used is %lf\n", total_time);
 
         printf("[ TEST ] spmalloc test pass!\n");
+        return;
+error:
+        printf("[ ERROR ] spmalloc fail\n");
+        return;
 }
