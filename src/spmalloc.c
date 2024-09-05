@@ -1,15 +1,22 @@
 #include <spmalloc.h>
 
-void* spmalloc(size_t size){
+void spmalloc_init()
+{
+#ifndef DEFAULT
+#endif
+}
+void* spmalloc(size_t size)
+{
 #ifdef DEFAULT
-	return malloc(size);
+        return malloc(size);
 #else
 
 #endif
 }
-void spfree(void* p){
+void spfree(void* p)
+{
 #ifdef DEFAULT
-	free(p);
+        free(p);
 #else
 
 #endif

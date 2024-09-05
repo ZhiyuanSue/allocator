@@ -7,7 +7,12 @@
  and it's also an example of the usage of the rb tree*/
 #define max_node_num 128
 #define max_loops    128
-u64 next = 1;
+static u64 next = 1;
+static u64 sprand()
+{
+        next = ((((u64)next * 1103515245 + 12345) / 65536) % 32768);
+        return next;
+}
 struct t_node {
         struct rb_node rb;
         u32 key;
@@ -37,8 +42,8 @@ bool check_rb(struct rb_node* node, int* height, int* count, int level)
         /*check height*/
         if (left_height != right_height) {
                 printf("height is unequal ,left %d,right %d\n",
-                         left_height,
-                         right_height);
+                       left_height,
+                       right_height);
                 return false;
         }
 
@@ -106,8 +111,7 @@ void rb_tree_test_remove(struct t_node* node, struct rb_root* root)
 void rb_tree_test_init()
 {
         for (int i = 0; i < max_node_num; i++) {
-                next = (u64)next * 1103515245 + 12345;
-                node_list[i].key = ((next / 65536) % 32768);
+                node_list[i].key = sprand();
                 node_list[i].rb.left_child = node_list[i].rb.right_child = NULL;
                 node_list[i].rb.black_height = 0;
                 node_list[i].rb.rb_parent_color = 0;
@@ -120,7 +124,8 @@ void rb_tree_test(void)
         for (int i = 0; i < max_loops; i++) {
                 rb_tree_test_init();
                 for (int j = 0; j < max_node_num; j++) {
-                        // printf("====== insert round %d loop %d ======\n", j, i);
+                        // printf("====== insert round %d loop %d ======\n", j,
+                        // i);
                         if (!check(j)) {
                                 printf("rb tree test insert error\n");
                                 return;
@@ -129,7 +134,8 @@ void rb_tree_test(void)
                 }
                 printf("finish round %d insert\n", i);
                 for (int j = max_node_num; j > 0; j--) {
-                        // printf("====== delete round %d loop %d ======\n", j, i);
+                        // printf("====== delete round %d loop %d ======\n", j,
+                        // i);
                         if (!check(j)) {
                                 printf("rb tree test remove error\n");
                                 return;
