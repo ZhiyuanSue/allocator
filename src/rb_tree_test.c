@@ -120,16 +120,16 @@ void rb_tree_test(void)
         for (int i = 0; i < max_loops; i++) {
                 rb_tree_test_init();
                 for (int j = 0; j < max_node_num; j++) {
-                        debug("====== insert round %d loop %d ======\n", j, i);
+                        // printf("====== insert round %d loop %d ======\n", j, i);
                         if (!check(j)) {
                                 printf("rb tree test insert error\n");
                                 return;
                         }
                         rb_tree_test_insert(&node_list[j], &t_root);
                 }
-                debug("finish round %d insert\n", i);
+                printf("finish round %d insert\n", i);
                 for (int j = max_node_num; j > 0; j--) {
-                        debug("====== delete round %d loop %d ======\n", j, i);
+                        // printf("====== delete round %d loop %d ======\n", j, i);
                         if (!check(j)) {
                                 printf("rb tree test remove error\n");
                                 return;
