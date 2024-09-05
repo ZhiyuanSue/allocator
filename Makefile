@@ -8,8 +8,15 @@ CFLAGS = -Wall -O3
 CFLAGS += -I $(INCLUDE_DIR)
 LD = ld
 LDFLAGS :=
+
+DEFAULT	?=false	#debug means use the glibc malloc
+ifeq ($(DEFAULT),true)
+	CFLAGS += -D DEFAULT
+endif
+
 export ROOT_DIR BUILD INCLUDE_DIR CC CFLAGS
 all: $(Target_ELF)
+	@echo ${CFLAGS}
 
 .PHONY:all
 
@@ -24,6 +31,10 @@ build: init
 $(Target_ELF): build
 	@echo "LD	" $(Target_ELF)
 	@${CC} -o $@ $(shell find $(BUILD) -name *.o)
+
+fmt:
+	@find . -name '*.c' -print0 | xargs -0 clang-format -i -style=file
+	@find . -name '*.h' -print0 | xargs -0 clang-format -i -style=file
 
 clean:
 	@echo "RM	OBJS"
