@@ -1,0 +1,6 @@
+#include <inc.h>
+void main(void)
+{
+        printf("====== [ TEST ] ======\n");
+        rb_tree_test();
+}
